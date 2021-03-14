@@ -43,6 +43,7 @@ end
 class Note < ActiveRecord::Base
   validates_format_of :title, without: /BAD_TITLE/
   validates_numericality_of :quantity, less_than: 100, if: :quantity?
+  validate :title_check
   belongs_to :user, required: true
 
   def self.ransackable_associations(auth_object = nil)
@@ -51,6 +52,11 @@ class Note < ActiveRecord::Base
 
   def self.ransackable_attributes(auth_object = nil)
     %w(created_at id quantity title updated_at user_id)
+  end
+
+  # Provide a validation adding an error to the model's base
+  def title_check
+    errors.add(:base, :invalid) if title == 'n/a'
   end
 end
 
