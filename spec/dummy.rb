@@ -45,6 +45,7 @@ class Note < ActiveRecord::Base
   validates_numericality_of :quantity, less_than: 100, if: :quantity?
   validate :title_check
   belongs_to :user, required: true
+  before_destroy :deletable?
 
   def self.ransackable_associations(auth_object = nil)
     %w(user)
@@ -57,6 +58,13 @@ class Note < ActiveRecord::Base
   # Provide a validation adding an error to the model's base
   def title_check
     errors.add(:base, :invalid) if title == 'n/a'
+  end
+
+  def deletable?
+    return true unless title == 'Lovely'
+
+    errors.add(:base, "Can't delete lovely notes")
+    throw :abort
   end
 end
 
@@ -90,7 +98,7 @@ class Dummy < Rails::Application
   routes.draw do
     scope defaults: { format: :jsonapi } do
       resources :users, only: [:index]
-      resources :notes, only: [:update]
+      resources :notes, only: [:update, :destroy]
     end
   end
 end
@@ -154,6 +162,15 @@ class NotesController < ActionController::Base
       note.errors.add(:title, message: 'has typos') if note.errors.key?(:title)
 
       render jsonapi_errors: note.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    note = Note.find(params[:id])
+    if note.destroy
+      head :no_content
+    else
+      render jsonapi_errors: note.errors, status: :conflict
     end
   end
 
