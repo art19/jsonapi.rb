@@ -61,13 +61,8 @@ RSpec.describe NotesController, type: :request do
           .to eq(Rack::Utils::HTTP_STATUS_CODES[422])
         expect(response_json['errors'][0]['source'])
           .to eq('pointer' => '/data/relationships/user')
-        if Rails.gem_version >= Gem::Version.new('6.1')
-          expect(response_json['errors'][0]['detail'])
-            .to eq('User must exist')
-        else
-          expect(response_json['errors'][0]['detail'])
-            .to eq('User can\'t be blank')
-        end
+        expect(response_json['errors'][0]['detail'])
+          .to eq('User must exist')
       end
 
       context 'required by validations' do
@@ -156,7 +151,7 @@ RSpec.describe NotesController, type: :request do
           expect(response_json['errors'][0]['source'])
               .to eq('pointer' => '/data')
           expect(response_json['errors'][0]['detail'])
-            .to eq('is invalid')
+            .to eq('Validation failed: The record has an unacceptable title.')
         end
       end
     end
