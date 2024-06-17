@@ -1,5 +1,9 @@
-require 'ransack/predicate'
-require_relative 'patches'
+begin
+  require 'active_record'
+  require 'ransack'
+  require_relative 'patches'
+rescue LoadError
+end
 
 # Filtering and sorting support
 module JSONAPI

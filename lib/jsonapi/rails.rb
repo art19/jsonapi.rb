@@ -37,7 +37,7 @@ module JSONAPI
     # @return [NilClass]
     def self.add_errors_renderer!
       ActionController::Renderers.add(:jsonapi_errors) do |resource, options|
-        self.content_type ||= Mime[:jsonapi]
+        self.content_type = Mime[:jsonapi] if self.media_type.nil?
 
         many = JSONAPI::Rails.is_collection?(resource, options[:is_collection])
         resource = [resource] unless many
@@ -47,7 +47,7 @@ module JSONAPI
         ) unless resource.is_a?(ActiveModel::Errors)
 
         errors = []
-        model = resource.instance_variable_get('@base')
+        model = resource.instance_variable_get(:@base)
 
         if respond_to?(:jsonapi_serializer_class, true)
           model_serializer = jsonapi_serializer_class(model, false)
@@ -56,8 +56,8 @@ module JSONAPI
         end
 
         details = {}
-        if ::Rails::VERSION::MAJOR >= 6 && ::Rails::VERSION::MINOR >= 1
-          resource.map do |error|
+        if ::Rails.gem_version >= Gem::Version.new('6.1')
+          resource.each do |error|
             attr = error.attribute
             details[attr] ||= []
             details[attr] << error.detail.merge(message: error.message)
@@ -90,7 +90,7 @@ module JSONAPI
     # @return [NilClass]
     def self.add_renderer!
       ActionController::Renderers.add(:jsonapi) do |resource, options|
-        self.content_type ||= Mime[:jsonapi]
+        self.content_type = Mime[:jsonapi] if self.media_type.nil?
 
         JSONAPI_METHODS_MAPPING.to_a[0..1].each do |opt, method_name|
           next unless respond_to?(method_name, true)
@@ -100,7 +100,7 @@ module JSONAPI
         # If it's an empty collection, return it directly.
         many = JSONAPI::Rails.is_collection?(resource, options[:is_collection])
         if many && !resource.any?
-          return options.slice(:meta, :links).merge(data: []).to_json
+          return options.slice(:meta, :links).compact.merge(data: []).to_json
         end
 
         JSONAPI_METHODS_MAPPING.to_a[2..-1].each do |opt, method_name|
@@ -121,15 +121,13 @@ module JSONAPI
 
     # Checks if an object is a collection
     #
-    # Stolen from [JSONAPI::Serializer], instance method.
+    # Basically forwards it to a [JSONAPI::Serializer] as there's no public API
     #
     # @param resource [Object] to check
     # @param force_is_collection [NilClass] flag to overwrite
     # @return [TrueClass] upon success
     def self.is_collection?(resource, force_is_collection = nil)
-      return force_is_collection unless force_is_collection.nil?
-
-      resource.respond_to?(:size) && !resource.respond_to?(:each_pair)
+      JSONAPI::ErrorSerializer.is_collection?(resource, force_is_collection)
     end
 
     # Resolves resource serializer class

@@ -39,7 +39,7 @@ The available features include:
    [sparse fields](https://jsonapi.org/format/#fetching-sparse-fieldsets))
  * [filtering](https://jsonapi.org/format/#fetching-filtering) and
    [sorting](https://jsonapi.org/format/#fetching-sorting) of the data
-   (powered by Ransack)
+   (powered by Ransack, soft-dependency)
  * [pagination](https://jsonapi.org/format/#fetching-pagination) support
 
 ## But how?
@@ -48,6 +48,16 @@ Mainly by leveraging [JSON:API Serializer](https://github.com/jsonapi-serializer
 and [Ransack](https://github.com/activerecord-hackery/ransack).
 
 Thanks to everyone who worked on these amazing projects!
+
+## Sponsors
+
+I'm grateful for the following companies for supporting this project!
+
+<p align="center">
+<a href="https://www.luneteyewear.com"><img src="https://user-images.githubusercontent.com/112147/136836142-2bfba96e-447f-4eb6-b137-2445aee81b37.png"/></a>
+<a href="https://www.startuplandia.io"><img src="https://user-images.githubusercontent.com/112147/136836147-93f8ab17-2465-4477-a7ab-e38255483c66.png"/></a>
+</p>
+
 
 ## Installation
 
@@ -223,6 +233,12 @@ class MyController < ActionController::Base
 end
 ```
 
+This allows you to run queries like:
+
+```bash
+$ curl -X GET /api/resources?fields[model]=model_attr,relationship
+```
+
 ### Filtering and sorting
 
 `JSONAPI::Filtering` uses the power of
@@ -230,6 +246,8 @@ end
 to filter and sort over a collection of records.
 The support is pretty extended and covers also relationships and composite
 matchers.
+
+Please add `ransack` to your `Gemfile` in order to benefit from this functionality!
 
 Here's an example:
 
@@ -264,7 +282,7 @@ grouping. To enable expressions along with filters, use the option flags:
 ```ruby
 options = { sort_with_expressions: true }
 jsonapi_filter(User.all, allowed_fields, options) do |filtered|
-  render jsonapi: result.group('id').to_a
+  render jsonapi: filtered.result.group('id').to_a
 end
 ```
 
@@ -314,7 +332,7 @@ If you want to change the default number of items per page or define a custom lo
 ```ruby
   def jsonapi_page_size(pagination_params)
     per_page = pagination_params[:size].to_f.to_i
-    per_page = 30 if per_page > 30
+    per_page = 30 if per_page > 30 || per_page < 1
     per_page
   end
 ```

@@ -1,8 +1,7 @@
 require 'securerandom'
-require 'active_record'
-require 'action_controller/railtie'
-require 'jsonapi'
+require 'rails/all'
 require 'ransack'
+require 'jsonapi'
 
 Rails.logger = Logger.new(STDOUT)
 Rails.logger.level = ENV['LOG_LEVEL'] || Logger::WARN
@@ -31,12 +30,28 @@ end
 
 class User < ActiveRecord::Base
   has_many :notes
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w(created_at first_name id last_name updated_at)
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w(notes)
+  end
 end
 
 class Note < ActiveRecord::Base
   validates_format_of :title, without: /BAD_TITLE/
   validates_numericality_of :quantity, less_than: 100, if: :quantity?
   belongs_to :user, required: true
+
+  def self.ransackable_associations(auth_object = nil)
+    %w(user)
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w(created_at id quantity title updated_at user_id)
+  end
 end
 
 class CustomNoteSerializer
