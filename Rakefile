@@ -4,6 +4,14 @@ require 'rubocop/rake_task'
 require 'yaml'
 require 'yardstick'
 
+desc 'Build the package and publish it to rubygems.pkg.github.com'
+task publish: :build do
+  # Requires local setup of personal access token, see:
+  # 1. https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-rubygems-registry#authenticating-with-a-personal-access-token
+  system("gem push --key github --host https://rubygems.pkg.github.com/art19 " \
+         "pkg/jsonapi.rb-#{JSONAPI::VERSION}.gem")
+end
+
 # rubocop:disable Rails/RakeEnvironment
 desc('Documentation stats and measurements')
 task('qa:docs') do
