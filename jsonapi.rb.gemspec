@@ -4,10 +4,11 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'jsonapi/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'jsonapi.rb'
-  spec.version       = JSONAPI::VERSION
-  spec.authors       = ['Stas Suscov']
-  spec.email         = ['stas@nerd.ro']
+  spec.name                           = 'jsonapi.rb'
+  spec.version                        = JSONAPI::VERSION
+  spec.metadata["allowed_push_host"]  = 'https://rubygems.pkg.github.com/art19'
+  spec.authors                        = ['Stas Suscov']
+  spec.email                          = ['stas@nerd.ro']
 
   spec.summary       = 'So you say you need JSON:API support in your API...'
   spec.description   = (
