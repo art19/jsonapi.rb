@@ -155,7 +155,7 @@ class NotesController < ActionController::Base
   include JSONAPI::Deserialization
 
   def update
-    raise_error if params[:id] == 'tada'
+    raise StandardError.new if params[:id] == 'tada'
 
     note = Note.find(params[:id])
 
