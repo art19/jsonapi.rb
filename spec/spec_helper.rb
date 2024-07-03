@@ -39,6 +39,7 @@ module RSpecHelpers
   #
   # @return [Hash]
   def response_json
+    puts response.body
     JSON.parse(response.body)
   end
 
