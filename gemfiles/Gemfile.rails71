@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem "ransack", "~> 4.1.0"
+
 gem "railties",     "~> 7.1"
 gem "activerecord", "~> 7.1"
 
