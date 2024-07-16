@@ -58,7 +58,7 @@ RSpec.describe UsersController, type: :request do
               page: { number: 2, size: 1 },
               sort: '-created_at',
               as_list: as_list
-            }.compact_blank
+            }.compact
           end
 
           context 'on an array of resources' do
@@ -157,7 +157,7 @@ RSpec.describe UsersController, type: :request do
             {
               page: { number: 5, size: 1 },
               as_list: as_list
-            }.compact_blank
+            }.compact
           end
 
           context 'on an array of resources' do
