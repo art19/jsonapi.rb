@@ -380,11 +380,6 @@ Then, run `rake spec` to run the tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
-To release a new version, update the version number in `version.rb`, and then
-run `bundle exec rake release`, which will create a git tag for the version,
-push git commits and tags, and push the `.gem` file to
-[rubygems.org](https://rubygems.org).
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
@@ -393,6 +388,18 @@ https://github.com/stas/jsonapi.rb
 This project is intended to be a safe, welcoming space for collaboration, and
 contributors are expected to adhere to the
 [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+### ART19 Gem Publishing
+
+Releases are manual, performed locally on a developer's machine. Gems are published to Github Packages. A comprehensive outline of this process can be found here: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-rubygems-registry.
+
+1. Increment the `ART19_REVISION` in [lib/jsonapi/version.rb#L5](https://github.com/art19/jsonapi.rb/blob/master/lib/jsonapi/version.rb#L4)
+
+2. Publish the gem:
+
+```
+bundle exec rake publish
+```
 
 ## License
 
